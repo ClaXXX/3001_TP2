@@ -2,17 +2,71 @@
 
 #include <algorithm>
 #include <assert.h>
-#include <stdlib.h>
 
-void effaceMoi(const std::vector<Resultat> resultats) {
-  // Cette fonction a deux utilites:
-  //  1) Vous prouver qu'on peut declarer et implementer de nouvelles
-  //  	 fonctions dans un .cpp sans les declarer dans le fichier .hpp
-  //  	 (que vous ne devez pas modifier)
-  //  2) Vous faire réaliser que cette fonction qui ne semble rien faire
-  //     s'exécute en fait en Theta(n) puisque le vecteur est copie
-  //     (il n'est pas passe par reference)
-  //  Maintenant que vous le savez, vous pouvez effacer cette fonction.
+/**
+ * Utils
+ */
+
+template<typename T>
+void swap(T &a, T &b)
+{
+  T c = a;
+  a = b;
+  b = c;
+}
+
+template<typename T>
+T max(T a, T b)
+{
+  if (a > b)
+    return a;
+  return b;
+}
+
+template<typename T>
+T min(T a, T b)
+{
+  if (a < b)
+    return a;
+  return b;
+}
+
+/**
+ * QuickSort Functions
+ */
+
+unsigned long Partition(std::vector<Resultat> &A, std::pair<unsigned long, unsigned long> limits)
+{
+  unsigned long j = limits.first;
+  const Resultat p = A.at(j);
+
+  for (unsigned long i = j + 1; i <= limits.second; i++) {
+    if (A[i] < p) {
+      j++;
+      swap(A[i], A[j]);
+    }
+  }
+  swap(A[j], A[limits.first]);
+  return j;
+}
+
+/**
+ * QuickSort
+ * @param A : entrée et resultat
+ * @param limits : nous permet d'éviter de copier à chaque fois le vector
+ * @param from : début de la page
+ * @param k : nombre d'éléments par page
+ */
+void QuickSort(std::vector<Resultat> &A, const std::pair<long, long> limits, const unsigned long from, const unsigned int k)
+{
+  if (limits.second - limits.first < 1)
+    return;
+  const unsigned long s = Partition(A, limits);
+
+  if (s < from + k)
+    QuickSort(A, std::pair<long, long>(s + 1, limits.second), from, k);
+  if (s > from)
+    QuickSort(A, std::pair<long, long>(limits.first, s - 1), from, k);
 }
 
 // Retourne les resultats d'une page
@@ -27,10 +81,10 @@ void retournePage(const std::vector<Resultat>& resultats_non_tries, unsigned int
   assert(page.empty());
   assert(nombre_resultats_par_page > 0);
   assert(numero_page < (resultats_non_tries.size() + nombre_resultats_par_page - 1) / nombre_resultats_par_page); // (a + b - 1) / b = plafond(a/b)
+  unsigned long from = nombre_resultats_par_page * numero_page;
+  std::vector<Resultat> A = std::vector<Resultat>(resultats_non_tries);
 
-  // Inserez votre code ici.
-  //  - Vous ne pouvez pas modifier le vecteur resultats_non_tries, mais rien ne vous empeche de modifier une copie.
-  //  - N'hesitez pas a definir d'autres fonctions (mais ne les declarez pas le .hpp)
-
-  effaceMoi(resultats_non_tries);
+  QuickSort(A, std::pair<long, long>(0, A.size() - 1), from, nombre_resultats_par_page);
+  page = std::vector<Resultat>(A.begin() + min(from, A.size()),
+                               A.begin() + min(from + nombre_resultats_par_page, A.size()));
 }
