@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <assert.h>
+#include <random>
 
 /**
  * Utils
@@ -16,14 +17,6 @@ void swap(T &a, T &b)
 }
 
 template<typename T>
-T max(T a, T b)
-{
-  if (a > b)
-    return a;
-  return b;
-}
-
-template<typename T>
 T min(T a, T b)
 {
   if (a < b)
@@ -35,9 +28,19 @@ T min(T a, T b)
  * QuickSort Functions
  */
 
+long generate(const long from, const long to)
+{
+  static std::default_random_engine generator;
+  std::uniform_int_distribution<long> uniform(from, to);
+
+  return uniform(generator);
+}
+
 unsigned long Partition(std::vector<Resultat> &A, std::pair<unsigned long, unsigned long> limits)
 {
+  unsigned long s = generate(limits.first, limits.second);
   unsigned long j = limits.first;
+  swap(A[j], A[s]);
   const Resultat p = A.at(j);
 
   for (unsigned long i = j + 1; i <= limits.second; i++) {
