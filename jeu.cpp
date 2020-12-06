@@ -16,6 +16,10 @@ T max(T a, T b) {
 void init(Tableau<unsigned int>& D, std::vector<unsigned int> sizes) {
   for (unsigned int i = 0; i < sizes.at(MONSTRES); ++i)
     D.at(i,0,0) = 0;
+  for (unsigned int i = 0; i < sizes.at(ROUGE); ++i)
+    D.at(0,i,0) = 0;
+  for (unsigned int i = 0; i < sizes.at(BLEU); ++i)
+    D.at(0,0,i) = 0;
 }
 
 void fillDynamicTab(Tableau<unsigned int>& D, const std::vector<Monstre>& monstres, unsigned int magie_rouge, unsigned int magie_bleue) {
